@@ -28,3 +28,8 @@
 .question {
   text-align: center;
 }
+
+.p {
+  text-align: center;
+  border: 1px solid #ccc;
+}

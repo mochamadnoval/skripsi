@@ -1,5 +1,11 @@
 <?php
 
+// session_start();
+
+// include '../database/Spesialisasi.php'; // Sesuaikan dengan path yang benar
+// include '../database/Dokter.php'; // Sesuaikan dengan path yang benar
+// include '../database/Konsultasi.php'; // Sesuaikan dengan path yang benar
+// include '../database/Pesan.php'; // Sesuaikan dengan path yang benar
 
   $spesial = new Spesialisasi;
   $tampilSpesial = $spesial->tampilSpesialisasi();
@@ -20,7 +26,8 @@
  ?>
 
 
- <?php if ($_SESSION['role']=='user'): ?>
+ <?php if ($_SESSION['role']=='user'): 
+  ?>
    <!-- Category -->
 
      <div class="row">
@@ -86,7 +93,7 @@
                     <div class="modal-body">
                       <form method="post" action="process/konsul/tambahKonsul_proses.php">
                         <div class="form-group text-center">
-                          <img src="<?= $row['foto_user'] ?>" alt="Security" class="gambar-bulat">
+                          <img src="<?= $row['foto_user'] ?>" alt="Foto Dokter" class="gambar-bulat">
                           <h2>Dr. <?= $row['nama_user']  ?></h2>
                           <p class="text-hijau"><?= $row['nama_spesialisasi']  ?></p>
                         </div>
