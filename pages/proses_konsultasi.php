@@ -51,39 +51,45 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $koneksi = new mysqli ($host, $username, $password, $dbname); 
-    
-    // Step 1: Ambil data gejala dari tabel aturan dan gabungkan dalam array
-    $gejalaArray = array();
-    $queryAturan = "SELECT kode_gejala FROM aturan";
-    $resultAturan = $koneksi->query($queryAturan);
+    $koneksi = new mysqli($host, $username, $password, $dbname);
 
-    while ($row = $resultAturan->fetch_assoc()) {
-        $gejalaArray = array_merge($gejalaArray, explode(',', $row['kode_gejala']));
-    }
+    // Step 1: Ambil data gejala dari tabel aturan dan gabungkan dalam array
+    // $gejalaArray = array();
+    // $queryAturan = "SELECT kode_gejala FROM aturan";
+    // $resultAturan = $koneksi->query($queryAturan);
+
+    // while ($row = $resultAturan->fetch_assoc()) {
+    //     $gejalaArray = array_merge($gejalaArray, explode(',', $row['kode_gejala']));
+    // }
 
     $inputGejala = $_GET['kode_gejala']; // get gejala dari pengguna
-    $inputGejalaArray = explode(',', $inputGejala);
 
-    $penyakitYangCocok = array();
+    // $inputGejalaArray = explode(',', $inputGejala);
+    // $penyakitYangCocok = array();
 
+    // $queryDiagnosa = "SELECT kode_penyakit FROM aturan WHERE kode_gejala LIKE '%$inputGejala%'";
+
+    // print_r($resultDiagnosa->fetch_assoc()['kode_penyakit']);
+    // die;
     // Step 2 & 3: Looping dan Pencarian Diagnosa
-    foreach ($inputGejalaArray as $gejala) {
-        foreach ($gejalaArray as $kodeGejala) {
-            if ($gejala == $kodeGejala) {
-                $queryDiagnosa = "SELECT kode_penyakit FROM aturan WHERE kode_gejala LIKE '%$gejala%'";
-                $resultDiagnosa = $koneksi->query($queryDiagnosa);
+    // foreach ($inputGejalaArray as $gejala) {
+    //     foreach ($gejalaArray as $kodeGejala) {
+    //         if ($gejala == $kodeGejala) {
 
-                while ($row = $resultDiagnosa->fetch_assoc()) {
-                    $penyakitYangCocok[] = $row['kode_penyakit'];
-                }
-            }
-        }
-    }
+    $queryDiagnosa = "SELECT kode_penyakit FROM aturan WHERE kode_gejala = '$inputGejala'";
+    $resultDiagnosa = $koneksi->query($queryDiagnosa);
+
+    //             while ($row = $resultDiagnosa->fetch_assoc()) {
+    //                 $penyakitYangCocok[] = $row['kode_penyakit'];
+    //             }
+    //         }
+    //     }
+    // }
 
     // Menghapus duplikat penyakit
-    $penyakitYangCocok = array_unique($penyakitYangCocok);
-    
+    // $penyakitYangCocok = array_unique($penyakitYangCocok);
+    $penyakitYangCocok = $resultDiagnosa->fetch_assoc()['kode_penyakit'];
+
     // Simpan data konsultasi ke tabel riwayat_konsultasi
     $user_id = $_SESSION['id'];
     $nama_user = $_SESSION['nama'];
@@ -91,18 +97,15 @@ try {
     $kode_penyakit = implode(',', $penyakitYangCocok);
 
     $simpanRiwayat = $koneksi->query("INSERT INTO riwayat_konsultasi (id_user, nama_user, kode_gejala, kode_penyakit, tanggal)
-    VALUES('$user_id', '$nama_user', '$inputGejala', '$kode_penyakit', '$tanggal')");    
-   
+    VALUES('$user_id', '$nama_user', '$inputGejala', '$kode_penyakit', '$tanggal')");
+
     if ($simpanRiwayat) {
 ?>
-<script>
-    window.location.href = "hasil_konsultasi.php?p=" + <?= $koneksi->insert_id ?>;
-
-</script>
+        <script>
+            window.location.href = "hasil_konsultasi.php?p=" + <?= $koneksi->insert_id ?>;
+        </script>
 <?php
     }
-        
-
 } catch (PDOException $e) {
     echo "Koneksi atau eksekusi query gagal: " . $e->getMessage();
 }
