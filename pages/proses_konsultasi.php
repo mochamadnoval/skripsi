@@ -88,13 +88,18 @@ try {
 
     // Menghapus duplikat penyakit
     // $penyakitYangCocok = array_unique($penyakitYangCocok);
-    $penyakitYangCocok = $resultDiagnosa->fetch_assoc()['kode_penyakit'];
+    if ($resultDiagnosa->num_rows === 0) {
+        $kode_penyakit = 'Gejala belum terdeteksi oleh sistem. Chat Dokter';
+    } else {
+
+        $penyakitYangCocok = $resultDiagnosa->fetch_assoc()['kode_penyakit'];
+        $kode_penyakit = implode(',', $penyakitYangCocok);
+    }
 
     // Simpan data konsultasi ke tabel riwayat_konsultasi
     $user_id = $_SESSION['id'];
     $nama_user = $_SESSION['nama'];
     $tanggal = date('Y-m-d H:i:s'); // Tanggal dan waktu saat ini
-    $kode_penyakit = implode(',', $penyakitYangCocok);
 
     $simpanRiwayat = $koneksi->query("INSERT INTO riwayat_konsultasi (id_user, nama_user, kode_gejala, kode_penyakit, tanggal)
     VALUES('$user_id', '$nama_user', '$inputGejala', '$kode_penyakit', '$tanggal')");
